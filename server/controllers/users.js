@@ -66,6 +66,6 @@ module.exports = {
  create,
  list,
  getById,
- getProfile
+ getProfile,
 };
 

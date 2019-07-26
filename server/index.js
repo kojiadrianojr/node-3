@@ -2,6 +2,8 @@ const express = require('express');
 const massive = require('massive');
 const users = require('./controllers/users.js'); 
 const posts = require('./controllers/posts.js');
+const comments = require('./controllers/comments.js');
+
 //const comments = require('./controllers/comments.js');
 
 massive({
@@ -24,11 +26,15 @@ massive({
   app.get('/api/users/:id/profile', users.getProfile);
 
 //posts
-  app.post('/api/posts', posts.create);
-
+  app.post('/api/new-post', posts.create);
+  app.get('/api/post/:postId', posts.getPost);
+  app.get('/api/posts', posts.fetchPosts);
+  app.patch('/api/edit-post/:id', posts.update);
 
 //comments
- 
+
+  app.post('/api/new-comment', comments.add);
+  app.patch('/api/edit-comment/:id', comments.update);
 
   const PORT = 3002;
   app.listen(PORT, () => {
