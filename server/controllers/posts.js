@@ -1,19 +1,33 @@
+//const authenticate = require('./authenticate.js');
+const jwt = require('jsonwebtoken');
+const secret = require('../../secret.js');
+
 function create(req, res){
    const db = req.app.get('db');
    const {content, userId} = req.body
 
-   db.posts
-     .insert(
-     {
-       content,
-       userId,
-     },
-     {
+if (!req.headers.authorization){
+	 return res.status(401).end();
+}
+ try {
+   const token = req.headers.authorization.split(' ')[1];
+   jwt.verify(token, secret); // will throw an Error when token is invalid!!!
+  db.posts
+      .insert(
+      {
+        content,
+        userId,
+      },
+      {
        deepInsert: true,
-     }
+      }
    )
-     .then(post => res.status(201).json(post))
-     .catch(err=>{console.error(err)});
+    .then(post => res.status(201).json(post))
+    .catch(err=>{console.error(err)});
+ } catch (err) {
+   console.error(err);
+   res.status(401).end();
+ }
 }
 
 function getPost(req, res) {
@@ -23,8 +37,12 @@ function getPost(req, res) {
 	post: [],
 	comments: [],
 	};
- 
-
+if (!req.headers.authorization){
+  return res.status(401).end();
+} 
+try {
+ const token = req.headers.authorization.split(' ')[1];
+ jwt.verify(token, secret);
  db.posts
      .findOne({id:postId})
      .then(post => {
@@ -48,12 +66,20 @@ function getPost(req, res) {
      .catch(err=>{console.error(err);
          res.status(500).end()     
      });
-
+ } catch (err) {
+  console.error(err);
+  res.status(401).end();
+ }
 }
 
 function fetchPosts(req, res) {
    const db = req.app.get('db');
-  
+if (!req.headers.authorization) {
+  return res.status(401).end();
+}  
+try {
+ const token = req.headers.authorization.split(' ')[1];
+ jwt.verify(token, secret); 
    db.posts
      .find()
      .then(posts => {
@@ -62,14 +88,26 @@ function fetchPosts(req, res) {
      .catch(err => {console.error(err);
 	    res.status(500).end()
 	});
-
+ } catch (err) {
+  console.error(err);
+  res.status(401).end();
+ }
 }
 
 function update(req, res){
    const db = req.app.get('db');
    const {content} = req.body   
    const {id} = req.params
-   db.posts
+
+if (!req.headers.authorization) {
+  return res.status(401).end();
+}
+ 
+try {
+
+ const token = req.headers.authorization.split(' ')[1];
+ jwt.verify(token, secret);
+  db.posts
      .update({
       id: id      
      },
@@ -85,8 +123,11 @@ function update(req, res){
        res.status(500).end()
       } 
      )
+ } catch (err) {
+  console.error(err);
+  res.status(401).end();
+ }
 }
-
 module.exports = {
  create,
  getPost,

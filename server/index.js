@@ -24,7 +24,7 @@ massive({
   app.get('/api/users', users.list);
   app.get('/api/users/:id', users.getById);
   app.get('/api/users/:id/profile', users.getProfile);
-  app.get('/api/protected/data', users.getData);
+  //app.get('/api/protected/data', users.getData);
   app.post('/api/login', users.login);
 //posts
   app.post('/api/new-post', posts.create);
